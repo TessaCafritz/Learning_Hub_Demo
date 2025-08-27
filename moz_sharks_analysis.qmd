@@ -6,11 +6,15 @@ output:
   html:
     code_folding: show
     toc: true
-    toc_depth: 3
-    toc_float: yes
-    number_sections: false
+    toc-depth: 3
+    toc-float: yes
+    number-sections: false
     theme: cerulean
     highlight: haddock
+    embed-resources: true
+execute:
+  warning: false
+  message: false
 ---
 
 ```{r setup}
@@ -18,41 +22,51 @@ library(tidyverse)
 library(terra)
 library(sf)
 library(here)
+library(DT)
 library(rnaturalearth)
 ```
  
 ## Identify priority habitat for two sharks in Mozambican waters
 
-Read in .csv files of silky shark and hammerhead shark habitat suitability.  Fill in empty cells with zero values.  Find average suitability.
+Read in .csv files of silky shark and hammerhead shark habitat suitability.  Find average suitability.
 
 ```{r}
 ocean_mask <- read_csv('_data/ocean_mask.csv')
 suitability_data <- read_csv('_data/shark_suitability.csv')
 
+DT::datatable(suitability_data)
+```
+
+```{r}
 silky <- suitability_data %>%
   filter(species == 'silky shark')
 
 hammerhead <- suitability_data %>%
   filter(species == 'scalloped hammerhead')
 
-### to find average, group all species by lat/long, and calculate 
+### to find average, group across all species by lat/long, and calculate 
 ### the mean suitability across the two shark species
 average <- suitability_data %>%
   group_by(long, lat) %>%
   summarize(suitability = mean(suitability)) %>%
   mutate(species = 'average')
+
 ```
 
 ## Create Africa continent polygon
+
+Use polygons from the RNaturalEarth R package and crop to the same extent as our data.
 
 ```{r}
 data_r <- rast(average)
 sf_use_s2(FALSE)
 afr_sf <- rnaturalearth::ne_countries(continent = 'Africa', returnclass = 'sf') %>%
-  st_crop(st_bbox(data_rast))
+  st_crop(st_bbox(data_r))
 ```
 
 ## Plot suitability
+
+Create a plot dataframe by binding together the average values with the two shark species of particular interest.  Then plot using GGplot.  Include an overlay of the continent outlines for context.
 
 ```{r}
 plot_df <- bind_rows(silky, hammerhead, average)
@@ -64,6 +78,7 @@ ggplot() +
   facet_wrap(~ species) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45)) +
-  labs(x = 'Longitude', y = 'Latitude')
+  labs(x = 'Longitude', y = 'Latitude',
+       title = 'Habitat suitability, Mozambique')
 ```
 

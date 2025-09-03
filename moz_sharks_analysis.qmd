@@ -2,9 +2,9 @@
 title: "Shark prioritization: analysis"
 author: "Casey O'Hara"
 date: "11/2/2020"
-output: 
+format: 
   html:
-    code_folding: show
+    code-fold: show
     toc: true
     toc-depth: 3
     toc-float: yes

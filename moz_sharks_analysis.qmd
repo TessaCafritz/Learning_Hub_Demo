@@ -1,7 +1,7 @@
 ---
 title: "Shark prioritization: analysis"
 author: "Casey O'Hara"
-date: "11/2/2020"
+date: "September 4, 2025"
 format: 
   html:
     code-fold: show
@@ -18,6 +18,8 @@ execute:
 ---
 
 ```{r setup}
+#| echo: false
+
 library(tidyverse)
 library(terra)
 library(sf)
@@ -26,59 +28,103 @@ library(DT)
 library(rnaturalearth)
 ```
  
-## Identify priority habitat for two sharks in Mozambican waters
+## Exploring shark habitats in Mozambique
 
-Read in .csv files of silky shark and hammerhead shark habitat suitability.  Find average suitability.
+Here we look at data that estimate how suitable different parts of the ocean are for silky sharks and hammerhead sharks. By combining the two datasets, we can find areas that may be especially important for both species and conservation efforts.
 
 ```{r}
-ocean_mask <- read_csv('_data/ocean_mask.csv')
-suitability_data <- read_csv('_data/shark_suitability.csv')
+### Read in the suitability data
+suitability_data <- read_csv('_data/shark_suitability.csv') %>%
+  mutate(suitability = round(suitability, 3))
 
+### Read in the map of ocean area
+ocean_mask <- read_csv('_data/ocean_mask.csv')
+
+### Examine the suitability data
 DT::datatable(suitability_data)
 ```
 
+As we can see in this table, the data set includes information as habitat suitability values for several species of shark, with locations identified by their latitude and longitude.  "Suitability" is based on the environmental conditions in each location, relative to the preferences of the species, on a scale from 0 (not suitable) to 1 (very suitable); for example, is the ocean temperature too cold, too warm, or just right?
+
+::: {#fig-sharks layout-ncol=2}
+![Silky shark](img/silky_shark.jpg){#fig-silky .lightbox width=400px height=250px}
+
+![Scalloped hammerhead shark](img/scalloped_hammerhead.jpg){#fig-scalloped .lightbox  width=460px height=250}
+
+Silky sharks and Scalloped hammerhead sharks are native to southeast Africa.  Click on images for a larger view.  Credit: [Silky shark by Alex Chernikh](https://en.wikipedia.org/wiki/Silky_shark#/media/File:Carcharhinus_falciformis_off_Cuba.jpg) () [CC2.5](https://creativecommons.org/licenses/by/2.5/deed.en)); [Scalloped hammerhead by Kris Mikael Krister](https://en.wikipedia.org/wiki/Scalloped_hammerhead#/media/File:Scalloped_Hammerhead_Shark_Sphyrna_Lewini_(226845659).jpeg) ([CC3.0](https://creativecommons.org/licenses/by/3.0/deed.en)).
+:::
+
+
 ```{r}
-silky <- suitability_data %>%
+silky_data <- suitability_data %>%
   filter(species == 'silky shark')
 
-hammerhead <- suitability_data %>%
+hammerhead_data <- suitability_data %>%
   filter(species == 'scalloped hammerhead')
 
 ### to find average, group across all species by lat/long, and calculate 
 ### the mean suitability across the two shark species
-average <- suitability_data %>%
+average_data <- suitability_data %>%
   group_by(long, lat) %>%
-  summarize(suitability = mean(suitability)) %>%
+  summarize(suitability = mean(suitability), .groups = 'drop') %>%
   mutate(species = 'average')
 
 ```
 
-## Create Africa continent polygon
+## Adding geographic context
 
-Use polygons from the RNaturalEarth R package and crop to the same extent as our data.
+To better visualize the results, we’ll bring in a map of Africa and trim it to match the area of our shark data. This gives the habitat patterns clearer context on the map.
 
 ```{r}
-data_r <- rast(average)
-sf_use_s2(FALSE)
-afr_sf <- rnaturalearth::ne_countries(continent = 'Africa', returnclass = 'sf') %>%
-  st_crop(st_bbox(data_r))
+### make a raster out of the `average` data frame using latitude/longitude
+average_raster <- rast(average_data)
+
+### import the Africa spatial data as a "simple features" object class
+africa_sf <- rnaturalearth::ne_countries(continent = 'Africa', returnclass = 'sf') 
+
+sf_use_s2(FALSE) ### this turns off 3-d geometry to avoid an error in the next step
+
+### Crop the Africa outline to be the same lat/long extent as our data
+africa_sf <- africa_sf %>%
+  st_crop(st_bbox(average_raster))
 ```
 
-## Plot suitability
+## Visualizing habitat patterns
 
-Create a plot dataframe by binding together the average values with the two shark species of particular interest.  Then plot using GGplot.  Include an overlay of the continent outlines for context.
+Finally, we combine the habitat information for silky sharks, hammerhead sharks, and their average values into one plot. Overlaying the outline of Africa helps us see where suitable shark habitats line up with the coastline.
 
 ```{r}
-plot_df <- bind_rows(silky, hammerhead, average)
+combined_data <- bind_rows(silky_data, hammerhead_data, average_data)
 
-ggplot() +
-  geom_raster(data = plot_df, aes(x = long, y = lat, fill = suitability)) +
-  geom_sf(data = afr_sf) +
+tripanel_plot <- ggplot() +
+  geom_raster(data = combined_data, aes(x = long, y = lat, fill = suitability)) +
+  geom_sf(data = africa_sf) +
   scale_fill_viridis_c() +
   facet_wrap(~ species) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45)) +
   labs(x = 'Longitude', y = 'Latitude',
        title = 'Habitat suitability, Mozambique')
+
+ggsave('img/shark_suitability.png', height = 3, width = 8, dpi = 300)
 ```
 
+![Habitat suitability for silky sharks, scalloped hammerhead sharks, and average](img/shark_suitability.png){width=800px}
+
+## Learning Hub Interactive | Coding in Action
+
+How do we go from lines of letters and numbers to the finished graph above? Coding makes it possible. From graphs like this to apps you use every day—like Instagram or Google Maps—coding is the engine behind much of what we see and interact with. Scientists rely on the same process to study the environment.
+
+Coding is the practice of writing instructions in a programming language—like R—that tell a computer how to analyze data, build graphs, or even create websites. Each block of code builds on the next, until it becomes a tool scientists can use to uncover patterns and solve problems.
+
+But science is rarely a solo effort. Platforms like GitHub allow researchers to share and improve code together—bringing in perspectives from wildlife biologists to local communities.
+
+This interactive display highlights how coding turns raw data into visualizations that can help tell the stories of the natural world and provide insights that inform conservation, policy, and action. 
+
+Explore the dataset yourself: can you spot any patterns as the code reveals the story of Mozambique’s sharks?
+
+## Learning Hub Description
+
+For 30 years, NCEAS has been helping scientists turn complex data into discoveries that change how we understand and protect the natural world. The NCEAS Learning Hub carries this legacy forward by equipping researchers with the data science skills needed to tackle today’s environmental challenges. From species decline to climate adaptation, modern science increasingly depends on the ability to manage, share, and synthesize vast amounts of information. The Learning Hub opens the door to these skills, making them accessible to researchers at any career stage.
+
+Through our courses, participants gain hands-on experience with tools that power collaborative, data-driven research. From computer programming in R, to project execution with GitHub, to best practices in data management, the Learning Hub emphasizes not just technical training, but the collaborative spirit that has always defined NCEAS’s approach to science. By teaching open, community-supported tools, the Hub helps researchers work more efficiently, transparently, and inclusively—ensuring that knowledge can be built and shared across projects, disciplines, and borders.

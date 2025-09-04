@@ -1,5 +1,5 @@
 ---
-title: "Shark prioritization: analysis"
+title: "Learning Hub Interactive | Coding in Action"
 author: "Casey O'Hara"
 date: "September 4, 2025"
 format: 
@@ -28,6 +28,16 @@ library(DT)
 library(rnaturalearth)
 ```
  
+How do we go from lines of letters and numbers to the finished graph above? Coding makes it possible. From graphs like this to apps you use every day - like Instagram or Google Maps - coding is the engine behind much of what we see and interact with. Scientists rely on the same process to study the environment.
+
+Coding is the practice of writing instructions in a programming language - like R - that tell a computer how to analyze data, build graphs, or even create websites. Each block of code builds on the next, until it becomes a tool scientists can use to uncover patterns and solve problems.
+
+But science is rarely a solo effort. Platforms like GitHub allow researchers to share and improve code together - bringing in perspectives from wildlife biologists to local communities.
+
+This interactive display highlights how coding turns raw data into visualizations that can help tell the stories of the natural world and provide insights that inform conservation, policy, and action. 
+
+Explore the dataset yourself: can you spot any patterns as the code reveals the story of Mozambique’s sharks?
+
 ## Exploring shark habitats in Mozambique
 
 Here we look at data that estimate how suitable different parts of the ocean are for silky sharks and hammerhead sharks. By combining the two datasets, we can find areas that may be especially important for both species and conservation efforts.
@@ -111,20 +121,3 @@ ggsave('img/shark_suitability.png', height = 3, width = 8, dpi = 300)
 
 ![Habitat suitability for silky sharks, scalloped hammerhead sharks, and average](img/shark_suitability.png){width=800px}
 
-## Learning Hub Interactive | Coding in Action
-
-How do we go from lines of letters and numbers to the finished graph above? Coding makes it possible. From graphs like this to apps you use every day—like Instagram or Google Maps—coding is the engine behind much of what we see and interact with. Scientists rely on the same process to study the environment.
-
-Coding is the practice of writing instructions in a programming language—like R—that tell a computer how to analyze data, build graphs, or even create websites. Each block of code builds on the next, until it becomes a tool scientists can use to uncover patterns and solve problems.
-
-But science is rarely a solo effort. Platforms like GitHub allow researchers to share and improve code together—bringing in perspectives from wildlife biologists to local communities.
-
-This interactive display highlights how coding turns raw data into visualizations that can help tell the stories of the natural world and provide insights that inform conservation, policy, and action. 
-
-Explore the dataset yourself: can you spot any patterns as the code reveals the story of Mozambique’s sharks?
-
-## Learning Hub Description
-
-For 30 years, NCEAS has been helping scientists turn complex data into discoveries that change how we understand and protect the natural world. The NCEAS Learning Hub carries this legacy forward by equipping researchers with the data science skills needed to tackle today’s environmental challenges. From species decline to climate adaptation, modern science increasingly depends on the ability to manage, share, and synthesize vast amounts of information. The Learning Hub opens the door to these skills, making them accessible to researchers at any career stage.
-
-Through our courses, participants gain hands-on experience with tools that power collaborative, data-driven research. From computer programming in R, to project execution with GitHub, to best practices in data management, the Learning Hub emphasizes not just technical training, but the collaborative spirit that has always defined NCEAS’s approach to science. By teaching open, community-supported tools, the Hub helps researchers work more efficiently, transparently, and inclusively—ensuring that knowledge can be built and shared across projects, disciplines, and borders.

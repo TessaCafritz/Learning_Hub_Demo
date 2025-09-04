@@ -28,7 +28,7 @@ library(DT)
 library(rnaturalearth)
 ```
  
-How do we go from lines of letters and numbers to the finished graph above? Coding makes it possible. From graphs like this to apps you use every day - like Instagram or Google Maps - coding is the engine behind much of what we see and interact with. Scientists rely on the same process to study the environment.
+The first part should read: How do we go from lines of letters and numbers to visuals that help data convey a story? From graphs to apps you use every day - like Instagram or Google Maps - coding is the engine behind much of what we see and interact with. Scientists rely on the same process to study the environment.
 
 Coding is the practice of writing instructions in a programming language - like R - that tell a computer how to analyze data, build graphs, or even create websites. Each block of code builds on the next, until it becomes a tool scientists can use to uncover patterns and solve problems.
 
